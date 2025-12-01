@@ -17,13 +17,10 @@ export default function Home({ searchParams }) {
   const currentPage = parseInt(searchParams?.page || 1);
   const searchTerm = searchParams?.q;
 
-  const { data: posts } = useQuery({
-    queryKey: ["posts", currentPage],
+  const { data: posts, isLoading, isFetching } = useQuery({
+    queryKey: ['posts', currentPage],
     queryFn: () => fetchPosts({ page: currentPage }),
-  }) 
-
-  const isLoading = false;
-  const isFetching = false;
+  });
 
   const ratingsAndCartegoriesMap = null;
 
