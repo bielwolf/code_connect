@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CardPost } from "@/components/CardPost";
 import { CommentList } from "@/components/CommentList";
 import styles from "./page.module.css";
+import { fetchPostRating } from "@/app/page";
 
 
 const fetchPostBySlug = async ({slug}) => {
@@ -21,7 +22,11 @@ const PagePost = ({ params }) => {
     queryFn: () => fetchPostBySlug({ slug })
   })
 
-  const postRating = null;
+  const {data: postRating} = useQuery({
+    queryKey: ['postRating', post?.id],
+    queryFn: () => fetchPostRating({ postId: post?.id }),
+    enabled: !!post?.id,
+  });
 
   return (
     <div>
