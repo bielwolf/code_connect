@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-const fetchReplies = async ({ commentId, slug }) => {
+export const fetchReplies = async ({ commentId, slug }) => {
     const results = await fetch(`http://localhost:3000/api/comment/${commentId}/replies?slug=${slug}`);
 
     if (!results.ok) {
@@ -14,6 +14,7 @@ export const useFetchReplies = ({ commentId, slug }) => {
     return useQuery({
         queryKey: ['replies', commentId],
         queryFn: async () => fetchReplies({ commentId, slug }),
-        enabled: !!commentId && !!slug
+        enabled: !!commentId && !!slug,
+        retry: 5,
     })
 }
