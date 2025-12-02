@@ -6,14 +6,14 @@ import { Spinner } from "@/components/Spinner";
 import styles from "./page.module.css";
 import Link from "next/link";
 
-const fetchPosts = async ({page}) => {
+const fetchPosts = async ({ page }) => {
   const results = await fetch(`http://localhost:3000/api/posts?page=${page}`);
 
   const data = await results.json();
   return data;
 };
 
-export const fetchPostRating = async ({postId}) => {
+export const fetchPostRating = async ({ postId }) => {
   const results = await fetch(
     `http://localhost:3000/api/post?postId=${postId}`
   );
@@ -32,14 +32,14 @@ export default function Home({ searchParams }) {
   });
 
   const postRatingsQueries = useQueries({
-    queries: 
-    posts?.data.length > 0 ? 
-    posts.data.map((post) => ({
-      queryKey: ['postHome', post.id],
-      queryFn: () => fetchPostRating({postId: post.id}),
-      enabled: !!post.id,
-      }))
-    : [],
+    queries:
+      posts?.data.length > 0 ?
+        posts.data.map((post) => ({
+          queryKey: ['postHome', post.id],
+          queryFn: () => fetchPostRating({ postId: post.id }),
+          enabled: !!post.id,
+        }))
+        : [],
   })
 
   const ratingsAndCartegoriesMap = postRatingsQueries.reduce((acc, query) => {
@@ -63,6 +63,7 @@ export default function Home({ searchParams }) {
           rating={ratingsAndCartegoriesMap?.[post.id]?.rating}
           category={ratingsAndCartegoriesMap?.[post.id]?.category}
           isFetching={isFetching}
+          currentPage={currentPage}
         />
       ))}
       <div className={styles.links}>

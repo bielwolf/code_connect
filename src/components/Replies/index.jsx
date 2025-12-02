@@ -13,17 +13,18 @@ export const Replies = ({ comment, slug }) => {
 
   const [showReplies, setShowReplies] = useState(false);
 
-  const {data: replies} = useFetchReplies( showReplies ? { commentId: comment.id, slug } : {});
+  const { data: replies } = useFetchReplies(showReplies ? { commentId: comment.id, slug } : {});
 
   const prefetch = () => {
     if (!showReplies) (
-    queryClient.prefetchQuery({
-      queryKey: ["replies", comment.id, slug ],
-      queryFn: () => fetchReplies({ commentId: comment.id, slug }),
-      retry: 5,
-      retryDelay: 500,
-    })
-  )};
+      queryClient.prefetchQuery({
+        queryKey: ["replies", comment.id, slug],
+        queryFn: () => fetchReplies({ commentId: comment.id, slug }),
+        retry: 5,
+        retryDelay: 500,
+      })
+    )
+  };
 
   return (
     <div className={styles.container}>
