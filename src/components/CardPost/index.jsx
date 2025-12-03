@@ -23,14 +23,27 @@ export const CardPost = ({ post, highlight, rating, category, isFetching, curren
         return res.json();
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["posts", post.slug]);
-      queryClient.invalidateQueries(["posts", currentPage]);
-    },
+    onMutate: async (newData) => {
+      const postQueryKey = ["post", post.slug];
+      await queryClient.cancelQueries(postQueryKey);
+
+      const previousPost = queryClient.getQueryData(postQueryKey);
+
+        if (previousPost) {
+          queryClient.setQueryData(postQueryKey, {
+            ...previousPost,
+            likes: previousPost.likes + 1,
+          });
+        }
+
+        return { previousPost };
+      },
+
     onError: (error, variables) => {
-      console.error(`Error ao salvar o thumbsUp para o slug: ${variables.slug}`, { error });
+      console.error(`Error ao salvar o thumbsUp para o slug: ${variables.slug}`, { error }
+      );
     }
-  })
+  });
 
   const subtmitCommentMutation = useMutation({
     mutationFn: (commentData) => {
