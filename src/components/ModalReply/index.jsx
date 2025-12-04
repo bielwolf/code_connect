@@ -6,12 +6,12 @@ import styles from "./replymodal.module.css";
 import { Textarea } from "../Textarea";
 import { SubmitButton } from "../SubmitButton";
 import { Comment } from "../Comment";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useReplyMutation } from "@/app/hooks/useReplyMutation";
 
 export const ReplyModal = ({ comment, slug }) => {
   const modalRef = useRef(null);
 
-  const queryClient = useQueryClient();
+  const { mutate, isSuccess } = useReplyMutation(slug);
 
   const openModal = () => {
     modalRef.current.openModal();
@@ -21,37 +21,16 @@ export const ReplyModal = ({ comment, slug }) => {
     modalRef.current.closeModal();
   };
 
-  const replyMutation = useMutation({
-    mutationFn: (commentData) => {
-      return fetch (`http://localhost:3000/api/comment/${comment.id}/replies`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(commentData),
-      }).then((response) => { {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok; ${response.status}`);
-        }
-        return response.json();
-      }
-      });
-    },
-    onSuccess: () => {
-      closeModal();
-      queryClient.invalidateQueries(["post", slug]);
-    },
-    onError: (error, variables) => {
-    console.error(`Error submitting reply: ${variables.slug}`, {error});
-    }
-  })
-
   const onSubmitCommentReply = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const text = formData.get("text");
 
-    replyMutation.mutate({comment, text})
+    mutate({comment, text})
+  };
+
+  if (isSuccess) {
+    closeModal();
   }
 
   return (
